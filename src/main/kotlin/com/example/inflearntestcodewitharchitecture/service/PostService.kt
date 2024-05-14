@@ -13,21 +13,21 @@ class PostService(
     private val postRepository: PostRepository,
     private val userService: UserService,
 ) {
-    fun getPostById(id: Long): PostEntity {
+    fun getById(id: Long): PostEntity {
         return postRepository.findById(id).orElseThrow { ResourceNotFoundException("Posts", id) }
     }
 
-    fun createPost(postCreateDto: PostCreateDto): PostEntity {
+    fun create(postCreateDto: PostCreateDto): PostEntity {
         val postEntity = PostEntity(
-            writer = userService.getByIdOrElseThrow(postCreateDto.writerId),
+            writer = userService.getById(postCreateDto.writerId),
             content = postCreateDto.content,
             createdAt = Clock.systemUTC().millis()
         )
         return postRepository.save(postEntity)
     }
 
-    fun updatePost(id: Long, postUpdateDto: PostUpdateDto): PostEntity {
-        val postEntity = getPostById(id).apply {
+    fun update(id: Long, postUpdateDto: PostUpdateDto): PostEntity {
+        val postEntity = getById(id).apply {
             content = postUpdateDto.content
             modifiedAt = Clock.systemUTC().millis()
         }

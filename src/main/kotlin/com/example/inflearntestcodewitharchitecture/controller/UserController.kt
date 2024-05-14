@@ -25,7 +25,7 @@ class UserController(private val userService: UserService) {
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: Long): UserResponse {
-        return toResponse(userService.getByIdOrElseThrow(id))
+        return toResponse(userService.getById(id))
     }
 
     @GetMapping("/{id}/verify")
@@ -54,7 +54,7 @@ class UserController(private val userService: UserService) {
         @RequestBody userUpdateDto: UserUpdateDto,
     ): MyProfileResponse {
         var userEntity: UserEntity = userService.getByEmail(email)
-        userEntity = userService.updateUser(userEntity.id!!, userUpdateDto)
+        userEntity = userService.update(userEntity.id!!, userUpdateDto)
         return toMyProfileResponse(userEntity)
     }
 

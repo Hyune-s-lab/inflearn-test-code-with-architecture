@@ -18,6 +18,6 @@ class PostCreateController(
 ) {
     @PostMapping
     fun createPost(@RequestBody postCreateDto: PostCreateDto): PostResponse {
-        return postController.toResponse(postService.createPost(postCreateDto))
+        return postController.toResponse(postService.create(postCreateDto))
     }
 }

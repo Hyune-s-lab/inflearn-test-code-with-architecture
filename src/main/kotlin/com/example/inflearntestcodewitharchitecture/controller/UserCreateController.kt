@@ -19,7 +19,7 @@ class UserCreateController(
 ) {
     @PostMapping
     fun createUser(@RequestBody userCreateDto: UserCreateDto): UserResponse {
-        val userEntity: UserEntity = userService.createUser(userCreateDto)
+        val userEntity: UserEntity = userService.create(userCreateDto)
         return userController.toResponse(userEntity)
     }
 }

@@ -18,21 +18,18 @@ class UserService(
     private val userRepository: UserRepository,
     private val mailSender: JavaMailSender,
 ) {
-    fun getById(id: Long): UserEntity? {
-        return userRepository.findByIdAndStatus(id, UserStatus.ACTIVE)
-    }
-
     fun getByEmail(email: String): UserEntity {
         return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE)
             ?: throw ResourceNotFoundException("Users", email)
     }
 
-    fun getByIdOrElseThrow(id: Long): UserEntity {
-        return userRepository.findById(id).orElseThrow { ResourceNotFoundException("Users", id) }
+    fun getById(id: Long): UserEntity {
+        return userRepository.findByIdAndStatus(id, UserStatus.ACTIVE)
+            ?: throw ResourceNotFoundException("Users", id)
     }
 
     @Transactional
-    fun createUser(userCreateDto: UserCreateDto): UserEntity {
+    fun create(userCreateDto: UserCreateDto): UserEntity {
         var userEntity = UserEntity(
             email = userCreateDto.email,
             nickname = userCreateDto.nickname,
@@ -47,8 +44,8 @@ class UserService(
     }
 
     @Transactional
-    fun updateUser(id: Long, userUpdateDto: UserUpdateDto): UserEntity {
-        val userEntity = getByIdOrElseThrow(id).apply {
+    fun update(id: Long, userUpdateDto: UserUpdateDto): UserEntity {
+        val userEntity = getById(id).apply {
             nickname = userUpdateDto.nickname
             address = userUpdateDto.address
         }

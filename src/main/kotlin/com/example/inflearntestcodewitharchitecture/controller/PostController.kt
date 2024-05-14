@@ -22,14 +22,14 @@ class PostController(
 ) {
     @GetMapping("/{id}")
     fun getPostById(@PathVariable id: Long): PostResponse {
-        return toResponse(postService.getPostById(id))
+        return toResponse(postService.getById(id))
     }
 
     @PutMapping("/{id}")
     fun updatePost(@PathVariable id: Long, @RequestBody postUpdateDto: PostUpdateDto): ResponseEntity<PostResponse> {
         return ResponseEntity
             .ok()
-            .body(toResponse(postService.updatePost(id, postUpdateDto)))
+            .body(toResponse(postService.update(id, postUpdateDto)))
     }
 
     fun toResponse(postEntity: PostEntity): PostResponse {
