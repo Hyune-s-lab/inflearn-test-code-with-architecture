@@ -18,7 +18,7 @@ class ExceptionControllerAdvice {
         return exception.message
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(CertificationCodeNotMatchedException::class)
     fun certificationCodeNotMatchedException(exception: CertificationCodeNotMatchedException): String? {
         return exception.message
