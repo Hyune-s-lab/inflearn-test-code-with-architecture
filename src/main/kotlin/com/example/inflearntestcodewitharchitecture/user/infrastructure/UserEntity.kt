@@ -1,6 +1,7 @@
 package com.example.inflearntestcodewitharchitecture.user.infrastructure
 
 import com.example.inflearntestcodewitharchitecture.common.infrastructure.BaseEntity
+import com.example.inflearntestcodewitharchitecture.user.domain.User
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -29,4 +30,29 @@ class UserEntity(
 
     @Column(name = "last_login_at")
     var lastLoginAt: Long? = null,
-): BaseEntity()
+
+    override val id: Long? = null,
+): BaseEntity() {
+
+    constructor(user: User): this(
+        id = user.id,
+        email = user.email,
+        nickname = user.nickname,
+        address = user.address,
+        certificationCode = user.certificationCode,
+        status = user.status,
+        lastLoginAt = user.lastLoginAt,
+    )
+
+    fun toModel(): User {
+        return User(
+            id = this.id,
+            email = this.email,
+            nickname = this.nickname,
+            address = this.address,
+            certificationCode = this.certificationCode,
+            status = this.status,
+            lastLoginAt = this.lastLoginAt,
+        )
+    }
+}

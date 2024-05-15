@@ -1,12 +1,12 @@
 package com.example.inflearntestcodewitharchitecture.user.service.port
 
+import com.example.inflearntestcodewitharchitecture.user.domain.User
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserEntity
 
 interface UserRepository {
-    fun findByEmailAndStatus(email: String, active: UserStatus): UserEntity?
-    fun findByIdAndStatus(id: Long, active: UserStatus): UserEntity?
-    fun findById(id: Long): UserEntity?
+    fun findByEmailAndStatus(email: String, active: UserStatus): User?
+    fun findByIdAndStatus(id: Long, active: UserStatus): User?
+    fun findById(id: Long): User?
 
-    fun save(userEntity: UserEntity): UserEntity
+    fun save(user: User): User
 }

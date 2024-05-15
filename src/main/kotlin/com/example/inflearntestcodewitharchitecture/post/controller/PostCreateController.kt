@@ -1,5 +1,6 @@
 package com.example.inflearntestcodewitharchitecture.post.controller
 
+import com.example.inflearntestcodewitharchitecture.common.support.toResponse
 import com.example.inflearntestcodewitharchitecture.post.controller.response.PostResponse
 import com.example.inflearntestcodewitharchitecture.post.domain.PostCreate
 import com.example.inflearntestcodewitharchitecture.post.service.PostService
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/posts")
 class PostCreateController(
     private val postService: PostService,
-    private val postController: PostController,
 ) {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     fun createPost(@RequestBody postCreate: PostCreate): PostResponse {
-        return postController.toResponse(postService.create(postCreate))
+        val post = postService.create(postCreate)
+        return post.toResponse()
     }
 }

@@ -1,12 +1,13 @@
 package com.example.inflearntestcodewitharchitecture.post.service
 
 import com.example.inflearntestcodewitharchitecture.common.exception.ResourceNotFoundException
+import com.example.inflearntestcodewitharchitecture.post.domain.Post
 import com.example.inflearntestcodewitharchitecture.post.domain.PostCreate
 import com.example.inflearntestcodewitharchitecture.post.domain.PostUpdate
 import com.example.inflearntestcodewitharchitecture.post.service.port.PostRepository
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.PostEntity
 import com.example.inflearntestcodewitharchitecture.user.service.UserService
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 
 @Service
@@ -14,24 +15,22 @@ class PostService(
     private val postRepository: PostRepository,
     private val userService: UserService,
 ) {
-    fun getById(id: Long): PostEntity {
+    fun getById(id: Long): Post {
         return postRepository.findById(id) ?: throw ResourceNotFoundException("Posts", id)
     }
 
-    fun create(postCreate: PostCreate): PostEntity {
-        val postEntity = PostEntity(
-            writer = userService.getById(postCreate.writerId),
-            content = postCreate.content,
-            createdAt = Clock.systemUTC().millis()
+    @Transactional
+    fun create(postCreate: PostCreate): Post {
+        val post = Post(
+            postCreate = postCreate,
+            createdAt = Clock.systemUTC().millis(),
+            writer = userService.getById(postCreate.writerId)
         )
-        return postRepository.save(postEntity)
+        return postRepository.save(post)
     }
 
-    fun update(id: Long, postUpdate: PostUpdate): PostEntity {
-        val postEntity = getById(id).apply {
-            content = postUpdate.content
-            modifiedAt = Clock.systemUTC().millis()
-        }
-        return postRepository.save(postEntity)
+    fun update(id: Long, postUpdate: PostUpdate): Post {
+        val post = getById(id).update(postUpdate, Clock.systemUTC().millis())
+        return postRepository.save(post)
     }
 }

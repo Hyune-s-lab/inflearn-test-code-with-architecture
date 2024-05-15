@@ -1,9 +1,10 @@
 package com.example.inflearntestcodewitharchitecture.user.controller
 
+import com.example.inflearntestcodewitharchitecture.common.support.toMyProfileResponse
+import com.example.inflearntestcodewitharchitecture.common.support.toResponse
 import com.example.inflearntestcodewitharchitecture.user.controller.response.MyProfileResponse
 import com.example.inflearntestcodewitharchitecture.user.controller.response.UserResponse
 import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserEntity
 import com.example.inflearntestcodewitharchitecture.user.service.UserService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
@@ -21,11 +22,13 @@ import java.net.URI
 @Tag(name = "유저(users)")
 @RestController
 @RequestMapping("/api/users")
-class UserController(private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+) {
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: Long): UserResponse {
-        return toResponse(userService.getById(id))
+        return userService.getById(id).toResponse()
     }
 
     @GetMapping("/{id}/verify")
@@ -43,9 +46,9 @@ class UserController(private val userService: UserService) {
     fun getMyInfo(
         @RequestHeader("EMAIL") email: String, // 일반적으로 스프링 시큐리티를 사용한다면 UserPrincipal 에서 가져옵니다.
     ): MyProfileResponse {
-        val userEntity: UserEntity = userService.getByEmail(email)
-        userService.login(userEntity.id!!)
-        return toMyProfileResponse(userEntity)
+        val user = userService.getByEmail(email)
+        userService.login(user.id!!)
+        return user.toMyProfileResponse()
     }
 
     @PutMapping("/me")
@@ -53,29 +56,8 @@ class UserController(private val userService: UserService) {
         @RequestHeader("EMAIL") email: String,  // 일반적으로 스프링 시큐리티를 사용한다면 UserPrincipal 에서 가져옵니다.
         @RequestBody userUpdate: UserUpdate,
     ): MyProfileResponse {
-        var userEntity: UserEntity = userService.getByEmail(email)
-        userEntity = userService.update(userEntity.id!!, userUpdate)
-        return toMyProfileResponse(userEntity)
-    }
-
-    fun toResponse(userEntity: UserEntity): UserResponse {
-        return UserResponse(
-            id = userEntity.id!!,
-            email = userEntity.email,
-            nickname = userEntity.nickname,
-            status = userEntity.status,
-            lastLoginAt = userEntity.lastLoginAt,
-        )
-    }
-
-    fun toMyProfileResponse(userEntity: UserEntity): MyProfileResponse {
-        return MyProfileResponse(
-            id = userEntity.id!!,
-            email = userEntity.email,
-            nickname = userEntity.nickname,
-            status = userEntity.status,
-            address = userEntity.address,
-            lastLoginAt = userEntity.lastLoginAt,
-        )
+        var user = userService.getByEmail(email)
+        user = userService.update(user.id!!, userUpdate)
+        return user.toMyProfileResponse()
     }
 }
