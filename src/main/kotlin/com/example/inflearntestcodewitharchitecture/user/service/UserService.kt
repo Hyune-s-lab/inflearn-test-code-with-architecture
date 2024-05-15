@@ -1,6 +1,8 @@
 package com.example.inflearntestcodewitharchitecture.user.service
 
 import com.example.inflearntestcodewitharchitecture.common.exception.ResourceNotFoundException
+import com.example.inflearntestcodewitharchitecture.common.service.port.ClockHolder
+import com.example.inflearntestcodewitharchitecture.common.service.port.UuidHolder
 import com.example.inflearntestcodewitharchitecture.user.domain.User
 import com.example.inflearntestcodewitharchitecture.user.domain.UserCreate
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
@@ -8,13 +10,14 @@ import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate
 import com.example.inflearntestcodewitharchitecture.user.service.port.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Clock
-import java.util.*
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
     private val certificationService: CertificationService,
+
+    private val uuidHolder: UuidHolder,
+    private val clockHolder: ClockHolder
 ) {
     fun getByEmail(email: String): User {
         return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE)
@@ -28,7 +31,7 @@ class UserService(
 
     @Transactional
     fun create(userCreate: UserCreate): User {
-        val user = userRepository.save(User(userCreate, UUID.randomUUID().toString()))
+        val user = userRepository.save(User(userCreate, uuidHolder))
         certificationService.send(user.email, user.id!!, user.certificationCode)
         return user
     }
@@ -42,7 +45,7 @@ class UserService(
     @Transactional
     fun login(id: Long) {
         val user = userRepository.findById(id) ?: throw ResourceNotFoundException("Users", id)
-        val loginUser = user.login(Clock.systemUTC().millis())
+        val loginUser = user.login(clockHolder)
         userRepository.save(loginUser)
     }
 

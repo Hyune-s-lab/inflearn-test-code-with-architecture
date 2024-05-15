@@ -1,5 +1,6 @@
 package com.example.inflearntestcodewitharchitecture.post.domain
 
+import com.example.inflearntestcodewitharchitecture.common.service.port.ClockHolder
 import com.example.inflearntestcodewitharchitecture.user.domain.User
 
 data class Post(
@@ -9,10 +10,10 @@ data class Post(
     val modifiedAt: Long? = null,
     val writer: User,
 ) {
-    constructor(postCreate: PostCreate, createdAt: Long, writer: User): this(
+    constructor(postCreate: PostCreate, clockHolder: ClockHolder, writer: User): this(
         id = null,
         content = postCreate.content,
-        createdAt = createdAt,
+        createdAt = clockHolder.millis(),
         writer = writer,
     )
 

@@ -1,6 +1,8 @@
 package com.example.inflearntestcodewitharchitecture.user.domain
 
 import com.example.inflearntestcodewitharchitecture.common.exception.CertificationCodeNotMatchedException
+import com.example.inflearntestcodewitharchitecture.common.service.port.ClockHolder
+import com.example.inflearntestcodewitharchitecture.common.service.port.UuidHolder
 
 data class User(
     val id: Long? = null,
@@ -11,11 +13,11 @@ data class User(
     val status: UserStatus,
     val lastLoginAt: Long? = null,
 ) {
-    constructor(userCreate: UserCreate, certificationCode: String): this(
+    constructor(userCreate: UserCreate, uuidHolder: UuidHolder): this(
         email = userCreate.email,
         nickname = userCreate.nickname,
         address = userCreate.address,
-        certificationCode = certificationCode,
+        certificationCode = uuidHolder.random(),
         status = UserStatus.PENDING,
     )
 
@@ -31,7 +33,7 @@ data class User(
         )
     }
 
-    fun login(lastLoginAt: Long): User {
+    fun login(clockHolder: ClockHolder): User {
         return User(
             id = this.id,
             email = this.email,
@@ -39,7 +41,7 @@ data class User(
             address = this.address,
             certificationCode = this.certificationCode,
             status = this.status,
-            lastLoginAt = lastLoginAt,
+            lastLoginAt = clockHolder.millis(),
         )
     }
 

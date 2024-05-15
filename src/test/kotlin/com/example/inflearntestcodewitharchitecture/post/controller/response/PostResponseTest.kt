@@ -1,12 +1,12 @@
 package com.example.inflearntestcodewitharchitecture.post.controller.response
 
 import com.example.inflearntestcodewitharchitecture.common.support.toResponse
+import com.example.inflearntestcodewitharchitecture.mock.FakeClockHolder
 import com.example.inflearntestcodewitharchitecture.post.domain.Post
 import com.example.inflearntestcodewitharchitecture.user.domain.User
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-import java.time.Clock
 
 class PostResponseTest {
     @Test
@@ -15,7 +15,7 @@ class PostResponseTest {
         val post = Post(
             id = 1,
             content = "helloworld",
-            createdAt = Clock.systemUTC().millis(),
+            createdAt = FakeClockHolder(1679530673958L).millis(),
             writer = User(
                 id = 1,
                 email = "kok202@naver.com",
