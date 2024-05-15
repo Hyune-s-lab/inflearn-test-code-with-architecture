@@ -2,7 +2,7 @@ package com.example.inflearntestcodewitharchitecture.user.controller
 
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserRepository
+import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserJpaRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 )
 class UserControllerTest(
     @Autowired private val mockMvc: MockMvc,
-    @Autowired private val userRepository: UserRepository,
+    @Autowired private val userJpaRepository: UserJpaRepository,
 ) {
     private val objectMapper = ObjectMapper()
 
@@ -67,7 +67,7 @@ class UserControllerTest(
         )
             .andExpect(status().isFound())
 
-        val userEntity = userRepository.findById(1L).get()
+        val userEntity = userJpaRepository.findById(1L).get()
         userEntity.status shouldBe UserStatus.ACTIVE
     }
 

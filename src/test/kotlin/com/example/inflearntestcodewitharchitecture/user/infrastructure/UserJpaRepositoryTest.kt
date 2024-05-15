@@ -15,14 +15,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @DataJpaTest(showSql = true)
 @TestPropertySource("classpath:test-application.properties")
 @Sql("/sql/user-repository-test-data.sql")
-class UserRepositoryTest(
-    @Autowired private val userRepository: UserRepository,
+class UserJpaRepositoryTest(
+    @Autowired private val userJpaRepository: UserJpaRepository,
 ) {
     @Test
     fun `findByIdAndStatus 로 유저 데이터를 찾아올 수 있다`() {
         // given
         // when
-        val result = userRepository.findByIdAndStatus(1, UserStatus.ACTIVE)
+        val result = userJpaRepository.findByIdAndStatus(1, UserStatus.ACTIVE)
 
         // then
         result shouldNotBe null
@@ -32,7 +32,7 @@ class UserRepositoryTest(
     fun `findByIdAndStatus 는 데이터가 없으면 Optional empty 를 내려준다`() {
         // given
         // when
-        val result = userRepository.findByIdAndStatus(1, UserStatus.PENDING)
+        val result = userJpaRepository.findByIdAndStatus(1, UserStatus.PENDING)
 
         // then
         result shouldBe null
@@ -42,7 +42,7 @@ class UserRepositoryTest(
     fun `findByEmailAndStatus 로 유저 데이터를 찾아올 수 있다`() {
         // given
         // when
-        val result = userRepository.findByEmailAndStatus("kok202@naver.com", UserStatus.ACTIVE)
+        val result = userJpaRepository.findByEmailAndStatus("kok202@naver.com", UserStatus.ACTIVE)
 
         // then
         result shouldNotBe null
@@ -52,7 +52,7 @@ class UserRepositoryTest(
     fun `findByEmailAndStatus 는 데이터가 없으면 Optional empty 를 내려준다`() {
         // given
         // when
-        val result = userRepository.findByEmailAndStatus("kok202@naver.com", UserStatus.PENDING)
+        val result = userJpaRepository.findByEmailAndStatus("kok202@naver.com", UserStatus.PENDING)
 
         // then
         result shouldBe null

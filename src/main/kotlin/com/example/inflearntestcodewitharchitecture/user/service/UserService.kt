@@ -6,9 +6,7 @@ import com.example.inflearntestcodewitharchitecture.user.domain.UserCreate
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate
 import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserEntity
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserRepository
-import org.springframework.mail.SimpleMailMessage
-import org.springframework.mail.javamail.JavaMailSender
+import com.example.inflearntestcodewitharchitecture.user.service.port.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -17,7 +15,7 @@ import java.util.*
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val mailSender: JavaMailSender,
+    private val certificationService: CertificationService,
 ) {
     fun getByEmail(email: String): UserEntity {
         return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE)
@@ -39,8 +37,8 @@ class UserService(
             certificationCode = UUID.randomUUID().toString()
         )
         userEntity = userRepository.save(userEntity)
-        val certificationUrl = generateCertificationUrl(userEntity)
-        sendCertificationEmail(userCreate.email, certificationUrl)
+
+        certificationService.send(userCreate.email, userEntity.id!!, userEntity.certificationCode)
         return userEntity
     }
 
@@ -50,34 +48,22 @@ class UserService(
             nickname = userUpdate.nickname
             address = userUpdate.address
         }
+
         return userRepository.save(userEntity)
     }
 
     @Transactional
     fun login(id: Long) {
-        val userEntity = userRepository.findById(id).orElseThrow { ResourceNotFoundException("Users", id) }
+        val userEntity = userRepository.findById(id) ?: throw ResourceNotFoundException("Users", id)
         userEntity.lastLoginAt = Clock.systemUTC().millis()
     }
 
     @Transactional
     fun verifyEmail(id: Long, certificationCode: String) {
-        val userEntity = userRepository.findById(id).orElseThrow { ResourceNotFoundException("Users", id) }
+        val userEntity = userRepository.findById(id) ?: throw ResourceNotFoundException("Users", id)
         if (certificationCode != userEntity.certificationCode) {
             throw CertificationCodeNotMatchedException()
         }
         userEntity.status = UserStatus.ACTIVE
-    }
-
-    private fun sendCertificationEmail(email: String, certificationUrl: String) {
-        val message = SimpleMailMessage().apply {
-            setTo(email)
-            subject = "Please certify your email address"
-            text = "Please click the following link to certify your email address: $certificationUrl"
-        }
-        mailSender.send(message)
-    }
-
-    private fun generateCertificationUrl(userEntity: UserEntity): String {
-        return "${"http://localhost:8080/api/users/${userEntity.id}"}/verify?certificationCode=${userEntity.certificationCode}"
     }
 }

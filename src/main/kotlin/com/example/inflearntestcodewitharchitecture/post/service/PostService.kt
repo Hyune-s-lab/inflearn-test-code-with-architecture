@@ -3,8 +3,8 @@ package com.example.inflearntestcodewitharchitecture.post.service
 import com.example.inflearntestcodewitharchitecture.common.exception.ResourceNotFoundException
 import com.example.inflearntestcodewitharchitecture.post.domain.PostCreate
 import com.example.inflearntestcodewitharchitecture.post.domain.PostUpdate
+import com.example.inflearntestcodewitharchitecture.post.service.port.PostRepository
 import com.example.inflearntestcodewitharchitecture.user.infrastructure.PostEntity
-import com.example.inflearntestcodewitharchitecture.user.infrastructure.PostRepository
 import com.example.inflearntestcodewitharchitecture.user.service.UserService
 import org.springframework.stereotype.Service
 import java.time.Clock
@@ -15,7 +15,7 @@ class PostService(
     private val userService: UserService,
 ) {
     fun getById(id: Long): PostEntity {
-        return postRepository.findById(id).orElseThrow { ResourceNotFoundException("Posts", id) }
+        return postRepository.findById(id) ?: throw ResourceNotFoundException("Posts", id)
     }
 
     fun create(postCreate: PostCreate): PostEntity {
