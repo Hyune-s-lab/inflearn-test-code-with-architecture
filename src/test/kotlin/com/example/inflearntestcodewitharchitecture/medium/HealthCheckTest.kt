@@ -1,4 +1,4 @@
-package com.example.inflearntestcodewitharchitecture.common.controller
+package com.example.inflearntestcodewitharchitecture.medium
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

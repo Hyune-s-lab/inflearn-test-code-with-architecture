@@ -6,14 +6,14 @@ import com.example.inflearntestcodewitharchitecture.post.domain.Post
 import com.example.inflearntestcodewitharchitecture.post.domain.PostCreate
 import com.example.inflearntestcodewitharchitecture.post.domain.PostUpdate
 import com.example.inflearntestcodewitharchitecture.post.service.port.PostRepository
-import com.example.inflearntestcodewitharchitecture.user.service.UserService
+import com.example.inflearntestcodewitharchitecture.user.service.port.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PostService(
     private val postRepository: PostRepository,
-    private val userService: UserService,
+    private val userRepository: UserRepository,
 
     private val clockHolder: ClockHolder,
 ) {
@@ -26,7 +26,8 @@ class PostService(
         val post = Post(
             postCreate = postCreate,
             clockHolder = clockHolder,
-            writer = userService.getById(postCreate.writerId)
+            writer = userRepository.findById(postCreate.writerId)
+                ?: throw ResourceNotFoundException("User", postCreate.writerId)
         )
         return postRepository.save(post)
     }

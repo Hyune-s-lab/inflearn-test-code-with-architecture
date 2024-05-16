@@ -1,4 +1,4 @@
-package com.example.inflearntestcodewitharchitecture.user.controller
+package com.example.inflearntestcodewitharchitecture.medium
 
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate

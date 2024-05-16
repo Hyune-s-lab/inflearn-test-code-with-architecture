@@ -1,4 +1,4 @@
-package com.example.inflearntestcodewitharchitecture.common.controller
+package com.example.inflearntestcodewitharchitecture.medium
 
 import com.example.inflearntestcodewitharchitecture.post.domain.PostUpdate
 import com.fasterxml.jackson.databind.ObjectMapper

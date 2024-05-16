@@ -1,6 +1,7 @@
-package com.example.inflearntestcodewitharchitecture.user.infrastructure
+package com.example.inflearntestcodewitharchitecture.medium
 
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
+import com.example.inflearntestcodewitharchitecture.user.infrastructure.UserJpaRepository
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test

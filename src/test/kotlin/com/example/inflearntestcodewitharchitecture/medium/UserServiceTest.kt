@@ -1,55 +1,39 @@
-package com.example.inflearntestcodewitharchitecture.user.serivce
+package com.example.inflearntestcodewitharchitecture.medium
 
 import com.example.inflearntestcodewitharchitecture.common.exception.CertificationCodeNotMatchedException
 import com.example.inflearntestcodewitharchitecture.common.exception.ResourceNotFoundException
-import com.example.inflearntestcodewitharchitecture.mock.FakeClockHolder
-import com.example.inflearntestcodewitharchitecture.mock.FakeMailSender
-import com.example.inflearntestcodewitharchitecture.mock.FakeUserRepository
-import com.example.inflearntestcodewitharchitecture.mock.FakeUuidHolder
-import com.example.inflearntestcodewitharchitecture.user.domain.User
 import com.example.inflearntestcodewitharchitecture.user.domain.UserCreate
 import com.example.inflearntestcodewitharchitecture.user.domain.UserStatus
 import com.example.inflearntestcodewitharchitecture.user.domain.UserUpdate
-import com.example.inflearntestcodewitharchitecture.user.service.CertificationService
 import com.example.inflearntestcodewitharchitecture.user.service.UserService
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.ArgumentMatchers
+import org.mockito.BDDMockito
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 
-class UserServiceTest {
-    private val userRepository = FakeUserRepository()
-    private val userService: UserService = UserService(
-        userRepository = userRepository,
-        certificationService = CertificationService(FakeMailSender()),
-        clockHolder = FakeClockHolder(1678530673958L),
-        uuidHolder = FakeUuidHolder("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab"),
-    )
-
-    @BeforeEach
-    fun beforeEach() {
-        listOf(
-            User(
-                id = 1,
-                email = "kok202@naver.com",
-                nickname = "kok202",
-                address = "Seoul",
-                certificationCode = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                status = UserStatus.ACTIVE,
-                lastLoginAt = 0L,
-            ), User(
-                id = 2,
-                email = "kok303@naver.com",
-                nickname = "kok303",
-                address = "Seoul",
-                certificationCode = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab",
-                status = UserStatus.PENDING,
-                lastLoginAt = 0L,
-            )
-        ).forEach { userRepository.save(it) }
-    }
+@SpringBootTest
+@TestPropertySource("classpath:test-application.properties")
+@SqlGroup(
+    Sql(value = ["/sql/user-service-test-data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+    Sql(value = ["/sql/delete-all-data.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+)
+class UserServiceTest(
+    @Autowired private val userService: UserService,
+) {
+    @MockBean
+    private lateinit var mailSender: JavaMailSender
 
     @Test
     fun `byEmail은 ACTIVE 상태인 유저를 찾아올 수 있다`() {
@@ -104,13 +88,17 @@ class UserServiceTest {
             nickname = "kok202-k",
         )
 
+        BDDMockito.doNothing().`when`(mailSender).send(
+            ArgumentMatchers.any(SimpleMailMessage::class.java)
+        )
+
         // when
         val result = userService.create(userCreate)
 
         // then
         result.id shouldNotBe null
         result.status shouldBe UserStatus.PENDING
-        result.certificationCode shouldBe "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab"
+        // assertThat(result.getCertificationCode()).isEqualTo("T.T"); // FIXME
     }
 
     @Test
@@ -139,7 +127,8 @@ class UserServiceTest {
 
         // then
         val userEntity = userService.getById(1)
-        userEntity.lastLoginAt shouldBe 1678530673958L
+        userEntity.lastLoginAt!! shouldBeGreaterThan 0L
+        // assertThat(result.getLastLoginAt()).isEqualTo("T.T"); // FIXME
     }
 
     @Test
